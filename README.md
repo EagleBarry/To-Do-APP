@@ -1,2 +1,3 @@
-# To-Do-APP
-Simple TODO App 
+# ToDoApp
+
+Simple TODO App with Angular and Express
