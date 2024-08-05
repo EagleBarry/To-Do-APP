@@ -5,4 +5,10 @@ export interface Task {
   completed: boolean;
 }
 
+export interface TaskToAdd {
+  name: string;
+  description: string;
+  completed: boolean;
+}
+
 export default Task;
