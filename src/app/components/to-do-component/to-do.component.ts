@@ -22,7 +22,6 @@ export class ToDoComponent {
   }
 
   deleteTask(id: number) {
-    console.log('deleteTask', id);
     this.taskService.deleteTask(id).subscribe(() => {
       this.loadTasks();
     });
