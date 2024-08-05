@@ -67,15 +67,16 @@ app.get('/task/:id', async (req: Request, res: Response) => {
 });
 
 app.post('/task', async (req: Request, res: Response) => {
+  const dbData = await getDBData();
+  
   const newTask = {
-    id: req.body.id,
+    id: dbData.length + 1,
     name: req.body.name,
     description: req.body.description,
     completed: req.body.completed,
   };
 
   try {
-    const dbData = await getDBData();
 
     const newTaskList: Array<Task> = [...dbData, newTask];
 
