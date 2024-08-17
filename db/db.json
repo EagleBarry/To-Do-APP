@@ -1,6 +1,1 @@
-[
-  { "id": 1, "name": "walking", "description": "normal", "completed": true },
-  { "id": 2, "name": "running", "description": "normal", "completed": false },
-  { "id": 3, "name": "reading", "description": "important", "completed": true },
-  { "id": 4, "name": "coding", "description": "work", "completed": false }
-]
+[{"id":1,"name":"reading","description":"important","completed":true},{"id":2,"name":"coding","description":"work","completed":false}]

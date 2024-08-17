@@ -1,20 +1,44 @@
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { TaskService } from '../../services/task.service';
-import Task from '../../models/task.model';
+import { ITaskDto } from '../../models/task.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-to-do',
   templateUrl: './to-do.component.html',
-  styleUrl: './to-do.component.scss',
+  styleUrls: ['./to-do.component.scss'],
 })
-export class ToDoComponent {
-  tasks$: Observable<Task[]>;
-  constructor(private taskService: TaskService) {
-    this.tasks$ = this.taskService.getAllTasks();
+export class ToDoComponent implements OnInit {
+  tasks$: Observable<ITaskDto[]> = of([]);
+  errorMessage: string | null = null;
+
+  constructor(private taskService: TaskService) {}
+
+  ngOnInit(): void {
+    this.loadTasks();
   }
 
-  deleteTask(id: number) {
-    this.taskService.deleteTask(id).subscribe();
+  loadTasks(): void {
+    this.tasks$ = this.taskService.getAllTasks().pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  deleteTask(id: string): void {
+    this.taskService.deleteTask(id).subscribe({
+      next: () => this.refreshTasks(), // Call refreshTasks after deleting a task
+      error: this.handleError.bind(this),
+    });
+  }
+
+  refreshTasks(): void {
+    this.loadTasks(); // Reuse loadTasks method to refresh the list
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<ITaskDto[]> {
+    this.errorMessage = error.message || 'An error occurred';
+    return of([]);
   }
 }

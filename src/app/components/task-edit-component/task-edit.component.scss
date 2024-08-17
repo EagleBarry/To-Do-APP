@@ -1,0 +1,10 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Adjust the gap as needed */
+  }
+  
+  mat-form-field,
+  mat-checkbox {
+    width: 100%;
+  }

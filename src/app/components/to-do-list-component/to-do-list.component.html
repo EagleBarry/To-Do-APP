@@ -1,29 +1,31 @@
 <div class="container">
   <mat-card class="content-card">
+    <section style="padding-bottom: 10px">
+      <button
+        mat-flat-button
+        color="primary"
+        style="float: right"
+        (click)="openDialog({ action: 'add' })"
+      >
+        Add Task
+      </button>
+    </section>
     <mat-form-field>
       <mat-label>Filter</mat-label>
       <input
         matInput
         (keyup)="applyFilter($event)"
-        placeholder="Ex. ium"
+        placeholder="Enter name or description"
         #input
       />
     </mat-form-field>
-
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox
-            (change)="$event ? toggleAllRows() : null"
-            [checked]="selection.hasValue() && isAllSelected()"
-            [indeterminate]="selection.hasValue() && !isAllSelected()"
-          ></mat-checkbox>
-        </th>
+        <th mat-header-cell *matHeaderCellDef>Completed</th>
         <td mat-cell *matCellDef="let row">
           <mat-checkbox
-            (click)="$event.stopPropagation()"
-            (change)="$event ? selection.toggle(row) : null"
-            [checked]="selection.isSelected(row)"
+            (change)="updateTaskStatus(row)"
+            [checked]="row.completed"
           ></mat-checkbox>
         </td>
       </ng-container>
@@ -38,12 +40,25 @@
         <td mat-cell *matCellDef="let element">{{ element.description }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="delete">
-        <th mat-header-cell *matHeaderCellDef>Delete</th>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let element">
-          <button mat-fab (click)="deleteTask(element)">
-            <mat-icon>delete</mat-icon>
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
           </button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              (click)="openDialog({ action: 'edit', task: element })"
+            >
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="deleteTask(element)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
         </td>
       </ng-container>
 
