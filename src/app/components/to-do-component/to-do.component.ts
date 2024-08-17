@@ -1,46 +1,44 @@
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { TaskService } from '../../services/task.service';
-import Task from '../../models/task.model';
-import { MatDialog } from '@angular/material/dialog';
-import { TaskEditComponent } from '../task-edit-component/task-edit.component';
+import { ITaskDto } from '../../models/task.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-to-do',
   templateUrl: './to-do.component.html',
-  styleUrl: './to-do.component.scss',
+  styleUrls: ['./to-do.component.scss'],
 })
-export class ToDoComponent {
-  tasks$!: Observable<Task[]>;
+export class ToDoComponent implements OnInit {
+  tasks$: Observable<ITaskDto[]> = of([]);
+  errorMessage: string | null = null;
 
-  constructor(private taskService: TaskService, private dialog: MatDialog) {
+  constructor(private taskService: TaskService) {}
+
+  ngOnInit(): void {
     this.loadTasks();
   }
 
-  loadTasks() {
-    this.tasks$ = this.taskService.getAllTasks();
+  loadTasks(): void {
+    this.tasks$ = this.taskService.getAllTasks().pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
-  deleteTask(id: number) {
-    this.taskService.deleteTask(id).subscribe(() => {
-      this.loadTasks();
-    });
-  }
-
-  openDialog(event: { action: 'add' | 'edit'; task?: Task }) {
-    const dialogRef = this.dialog.open(TaskEditComponent, {
-      data: { action: event.action, task: event.task },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadTasks();
-      }
+  deleteTask(id: string): void {
+    this.taskService.deleteTask(id).subscribe({
+      next: () => this.refreshTasks(), // Call refreshTasks after deleting a task
+      error: this.handleError.bind(this),
     });
   }
 
-  updateTaskStatus(task: Task) {
-    this.taskService.updateTaskStatus(task).subscribe(() => {
-      this.loadTasks();
-    });
+  refreshTasks(): void {
+    this.loadTasks(); // Reuse loadTasks method to refresh the list
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<ITaskDto[]> {
+    this.errorMessage = error.message || 'An error occurred';
+    return of([]);
   }
 }

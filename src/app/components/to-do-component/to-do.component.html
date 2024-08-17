@@ -1,8 +1,5 @@
-<ng-container *ngIf="tasks$ | async as tasks">
-  <app-to-do-list
-    [tasks]="tasks"
-    (deleteTaskEvent)="deleteTask($event)"
-    (openDialogEvent)="openDialog($event)"
-    (updateTaskStatusEvent)="updateTaskStatus($event)"
-  ></app-to-do-list>
-</ng-container>
+<app-to-do-list
+  [tasks]="(tasks$ | async) || []"
+  (deleteTaskEvent)="deleteTask($event)"
+  (refreshTasksEvent)="refreshTasks()"
+></app-to-do-list>
